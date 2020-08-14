@@ -9,22 +9,28 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import java.util.List;
+
 @Service
 public class AlunoService {
 
     @Autowired
     private AlunoRepository alunoRepository;
 
+    @Autowired
+    private EntityManager em;
 
-    public ResponseEntity gravar(AlunoDTO alunoDTO){
+
+    public ResponseEntity gravar(AlunoDTO alunoDTO) throws Exception{
         AlunoEntity entity = new AlunoEntity();
+        List<AlunoEntity> alunoCPF = alunoRepository.findByCpf(alunoDTO.getCpf());
+
+        if (alunoCPF != null) {
+            throw new Exception("dsCPF já cadastrado");
+        }
         entity.setNomeAluno(alunoDTO.getNome());
         entity.setCpf(alunoDTO.getCpf());
-
-        //TODO validar se o CPF existe no banco antes de existir, caso exista retornar mensagem de erro
-
-
-
 
         entity = alunoRepository.save(entity);
 
